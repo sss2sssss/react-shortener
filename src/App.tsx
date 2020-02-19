@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Form, Button, ListGroup, Container, Row, Col, Card, Alert, Spinner } from 'react-bootstrap';
 import * as validUrl from 'valid-url';
+import './App.css';
 
 interface Link {
   urlShortener: string
@@ -140,9 +141,9 @@ export default class App extends Component<Props, State> {
   render() {
     return (
       <Container>
-        <Row>
-          <Col xs={6} md={4}>
-          <Card>
+        <Row className="row-gap">
+          <Col>
+            <Card>
               <Card.Body>
                 <Card.Title>Input your link that desired to be shortened!</Card.Title>
                 <Form className="App" onSubmit={this.onSubmit}>
@@ -176,20 +177,22 @@ export default class App extends Component<Props, State> {
               </Card.Body>
             </Card>
           </Col>
-          <Col xs={12} md={8}>
-          <Card>
-            <Card.Body>
-              <Card.Title>Shortened Url</Card.Title>
-              {
-                this.state.urls && this.state.urls.length > 0 ?
-                <ListGroup>
+        </Row>
+        <Row className="row-gap">
+          <Col>
+            <Card>
+              <Card.Body>
+                <Card.Title>Shortened Url</Card.Title>
                 {
-                  this.state.urls.map((item, index) => <ListGroup.Item target="_blank" key={index} action href={item.urlShortener}>{item.urlShortener}</ListGroup.Item>)
+                  this.state.urls && this.state.urls.length > 0 ?
+                  <ListGroup>
+                  {
+                    this.state.urls.map((item, index) => <ListGroup.Item target="_blank" key={index} action href={item.urlShortener}>{item.urlShortener}</ListGroup.Item>)
+                  }
+                  </ListGroup> : <Card.Text>Empty List</Card.Text>
                 }
-                </ListGroup> : <Card.Text>Empty List</Card.Text>
-              }
-            </Card.Body>
-          </Card>
+              </Card.Body>
+            </Card>
           </Col>
         </Row>
       </Container>
