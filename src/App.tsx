@@ -39,6 +39,8 @@ export default class App extends Component<Props, State> {
 
   componentDidMount() {
 
+    document.title = "React Link Shortener";
+
     try
     {
       if (localStorage.getItem('urlList') === "" || localStorage.getItem('urlList') === null)
@@ -125,7 +127,7 @@ export default class App extends Component<Props, State> {
                   </Form.Group>
                   <Form.Group as={Row}>
                     <Col sm={{ span: 10, offset: 2 }}>
-                      <Button variant="primary" disabled={this.state.buttonDisabled || this.state.url == ''} type="submit">
+                      <Button variant="primary" disabled={this.state.buttonDisabled || this.state.url === ''} type="submit">
                         Submit
                       </Button>
                     </Col>
