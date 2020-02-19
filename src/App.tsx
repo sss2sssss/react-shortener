@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Button, ListGroup, Container, Row, Col, Card, Alert } from 'react-bootstrap';
+import { Form, Button, ListGroup, Container, Row, Col, Card, Alert, Spinner } from 'react-bootstrap';
 import * as validUrl from 'valid-url';
 
 interface Link {
@@ -63,7 +63,7 @@ export default class App extends Component<Props, State> {
   }
 
   onChange = (event : React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ url: event.target.value, failAlertShow: false, failMessageInput: '', successAlertShow: false, });
+    this.setState({ url: event.target.value, failAlertShow: false, failMessageInput: '', successAlertShow: false, buttonDisabled: false,});
   }
 
   
@@ -73,36 +73,63 @@ export default class App extends Component<Props, State> {
     const { url } = this.state;
     if (validUrl.isHttpUri(url) || validUrl.isHttpsUri(url))
     {
-      this.urls.push({
-        urlShortener: url
+      this.setState({
+        buttonDisabled: true
       });
-  
-      try
+      fetch("https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key="+ process.env.REACT_APP_FIREBASE_WEB_API_KEY, 
       {
-        localStorage.setItem('urlList', JSON.stringify(this.urls));
-  
-        this.setState({
-          urls: this.urls,
-          url: '',
-          failAlertShow: false,
-          successAlertShow: true,
-          failMessageInput: ''
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          longDynamicLink: process.env.REACT_APP_FIREBASE_DYNAMIC_LINK_DOMAIN + "?link=" + url
+        })
+      })
+      .then((res) => res.json())
+      .then(json => {
+        this.urls.push({
+          urlShortener: json.shortLink
         });
 
-
-      }
-      catch (e)
-      {
+        try
+        {
+          localStorage.setItem('urlList', JSON.stringify(this.urls));
+    
+          this.setState({
+            buttonDisabled: false,
+            urls: this.urls,
+            url: '',
+            failAlertShow: false,
+            successAlertShow: true,
+            failMessageInput: ''
+          });
+  
+  
+        }
+        catch (e)
+        {
+          this.setState({
+            buttonDisabled: false,
+            failAlertShow: true,
+            successAlertShow: false,
+            failMessageInput: 'Something Unexpected Happened!'
+          });
+        }
+      })
+      .catch((e) => {
         this.setState({
+          buttonDisabled: false,
           failAlertShow: true,
           successAlertShow: false,
           failMessageInput: 'Something Unexpected Happened!'
         });
-      }
+      });
     }
     else
     {
       this.setState({
+        buttonDisabled: false,
         failAlertShow: true,
         successAlertShow: false,
         failMessageInput: 'Invalid Url Enter!'
@@ -127,9 +154,16 @@ export default class App extends Component<Props, State> {
                   </Form.Group>
                   <Form.Group as={Row}>
                     <Col sm={{ span: 10, offset: 2 }}>
-                      <Button variant="primary" disabled={this.state.buttonDisabled || this.state.url === ''} type="submit">
-                        Submit
-                      </Button>
+                      <Row>
+                        <Col>
+                          <Button variant="primary" disabled={this.state.buttonDisabled || this.state.url === ''} type="submit">
+                            Submit
+                          </Button>
+                        </Col>
+                        <Col>
+                          <Spinner hidden={!this.state.buttonDisabled} animation="border" />
+                        </Col>
+                      </Row>
                     </Col>
                   </Form.Group>
                 </Form>
@@ -150,7 +184,7 @@ export default class App extends Component<Props, State> {
                 this.state.urls && this.state.urls.length > 0 ?
                 <ListGroup>
                 {
-                  this.state.urls.map((item, index) => <ListGroup.Item target="_blank" action href={item.urlShortener}>{item.urlShortener}</ListGroup.Item>)
+                  this.state.urls.map((item, index) => <ListGroup.Item target="_blank" key={index} action href={item.urlShortener}>{item.urlShortener}</ListGroup.Item>)
                 }
                 </ListGroup> : <Card.Text>Empty List</Card.Text>
               }
