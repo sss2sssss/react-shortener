@@ -150,7 +150,7 @@ export default class App extends Component<Props, State> {
                   <Form.Group as={Row} controlId="formBasicUrl">
                     <Form.Label column sm={2}>Url</Form.Label>
                     <Col sm={10}>
-                      <Form.Control required placeholder="Type Url" value={this.state.url} onChange={this.onChange}/>
+                      <Form.Control required placeholder="Type Url" disabled={this.state.buttonDisabled} value={this.state.url} onChange={this.onChange}/>
                     </Col>
                   </Form.Group>
                   <Form.Group as={Row}>
