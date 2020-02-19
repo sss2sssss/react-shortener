@@ -77,8 +77,11 @@ export default class App extends Component<Props, State> {
   
         this.setState({
           urls: this.urls,
+          url: '',
           failAlertShow: false,
         });
+
+
       }
       catch (e)
       {
