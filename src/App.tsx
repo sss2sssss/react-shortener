@@ -14,6 +14,8 @@ interface State {
   url: string;
   buttonDisabled: boolean;
   failAlertShow: boolean;
+  failMessageInput: string;
+  successAlertShow: boolean;
   urls: Link[];
 }
 
@@ -29,6 +31,8 @@ export default class App extends Component<Props, State> {
       url: '',
       buttonDisabled: false,
       failAlertShow: false,
+      failMessageInput: '',
+      successAlertShow: false,
       urls: []
     };
   }
@@ -57,7 +61,7 @@ export default class App extends Component<Props, State> {
   }
 
   onChange = (event : React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ url: event.target.value, failAlertShow: false });
+    this.setState({ url: event.target.value, failAlertShow: false, failMessageInput: '', successAlertShow: false, });
   }
 
   
@@ -79,19 +83,27 @@ export default class App extends Component<Props, State> {
           urls: this.urls,
           url: '',
           failAlertShow: false,
+          successAlertShow: true,
+          failMessageInput: ''
         });
 
 
       }
       catch (e)
       {
-  
+        this.setState({
+          failAlertShow: true,
+          successAlertShow: false,
+          failMessageInput: 'Something Unexpected Happened!'
+        });
       }
     }
     else
     {
       this.setState({
         failAlertShow: true,
+        successAlertShow: false,
+        failMessageInput: 'Invalid Url Enter!'
       });
     }
   }
@@ -120,7 +132,10 @@ export default class App extends Component<Props, State> {
                   </Form.Group>
                 </Form>
                 <Alert hidden={!this.state.failAlertShow} variant="danger">
-                  Invalid Url Enter!
+                  {this.state.failMessageInput}
+                </Alert>
+                <Alert hidden={!this.state.successAlertShow} variant="success">
+                  Url Successfully Shortened!
                 </Alert>
               </Card.Body>
             </Card>
