@@ -4,7 +4,10 @@ Simple Link Shortner Creator developed by using React and Firebase Dynamic Link.
 
 Demo: https://react-linkshortener.firebaseapp.com
 
-The demo site will allowing user to shorten this four domain: google.com, facebook.com, youtube.com, github.com, medium.com
+The demo site will allowing user to shorten this four domain: google.com, facebook.com, youtube.com, github.com, medium.com.
+
+For more information on URL whitelisting on Firebase Dynamic Link, please refer to this FAQ:
+https://support.google.com/firebase/answer/9021429
 
 ## Before Start
 Initiate a Firebase project then confugure for Dynamic Link, for more detail can click following link:
