@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import { Form, Button, ListGroup, Container, Row, Col, Card, Alert, Spinner } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, Card, Alert, Spinner, Accordion } from 'react-bootstrap';
 import * as validUrl from 'valid-url';
 import './App.css';
 
 interface Link {
-  urlShortener: string
+  urlTitle: string,
+  urlShortener: string,
+  isToggled: boolean
 }
 
 interface Props {
@@ -12,6 +14,7 @@ interface Props {
 }
 
 interface State {
+  title: string;
   url: string;
   buttonDisabled: boolean;
   failAlertShow: boolean;
@@ -29,6 +32,7 @@ export default class App extends Component<Props, State> {
   constructor(props : any) {
     super(props);
     this.state = {
+      title: '',
       url: '',
       buttonDisabled: false,
       failAlertShow: false,
@@ -52,6 +56,10 @@ export default class App extends Component<Props, State> {
       {
         this.urls = JSON.parse(localStorage.getItem('urlList') || "");
       }
+
+      this.urls.forEach((item) => {
+        item.isToggled = false;
+      });
     }
     catch (e)
     {
@@ -67,65 +75,112 @@ export default class App extends Component<Props, State> {
     this.setState({ url: event.target.value, failAlertShow: false, failMessageInput: '', successAlertShow: false, buttonDisabled: false,});
   }
 
-  
+  onTitleChange = (event : React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ title: event.target.value, failAlertShow: false, failMessageInput: '', successAlertShow: false, buttonDisabled: false,});
+  }
+
+  onAccordionToggle = (event?: React.SyntheticEvent<Element, Event> | undefined) => {
+    var counter = 0;
+    this.urls.forEach(element => {
+      if (counter.toString() === event?.currentTarget.id)
+      {
+        element.isToggled = !element.isToggled;
+      }
+      else
+      {
+        element.isToggled = false;
+      }
+      counter++;
+    });
+    this.setState({urls: this.urls});
+  }
 
   onSubmit = (event : React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const { url } = this.state;
-    if (validUrl.isHttpUri(url) || validUrl.isHttpsUri(url))
+    const { url, title } = this.state;
+    if (validUrl.isHttpUri(url.trim()) || validUrl.isHttpsUri(url.trim()))
     {
-      this.setState({
-        buttonDisabled: true
-      });
-      fetch("https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key="+ process.env.REACT_APP_FIREBASE_WEB_API_KEY, 
+      if(validUrl.isHttpUri(title.trim()) || validUrl.isHttpsUri(title.trim()))
       {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify({
-          longDynamicLink: process.env.REACT_APP_FIREBASE_DYNAMIC_LINK_DOMAIN + "?link=" + url
-        })
-      })
-      .then((res) => res.json())
-      .then(json => {
-        this.urls.push({
-          urlShortener: json.shortLink
+        this.setState({
+          buttonDisabled: false,
+          failAlertShow: true,
+          successAlertShow: false,
+          failMessageInput: 'Title Cannot be Same as Url or In Http(s) Url Format!'
+        });
+      }
+      else
+      {
+        this.setState({
+          buttonDisabled: true
         });
 
-        try
+        fetch("https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key="+ process.env.REACT_APP_FIREBASE_WEB_API_KEY, 
         {
-          localStorage.setItem('urlList', JSON.stringify(this.urls));
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+          },
+          body: JSON.stringify({
+            longDynamicLink: process.env.REACT_APP_FIREBASE_DYNAMIC_LINK_DOMAIN + "?link=" + url.trim() + ((title.trim() && title.trim() !== "") ? "&st=" + title.trim() : "")
+          })
+        })
+        .then((res) => res.json())
+        .then(json => {
+          if (json.shortLink && json.shortLink.trim() !== "")
+          {
+            this.urls.push({
+              urlTitle: title,
+              urlShortener: json.shortLink.trim(),
+              isToggled: false
+            });
     
-          this.setState({
-            buttonDisabled: false,
-            urls: this.urls,
-            url: '',
-            failAlertShow: false,
-            successAlertShow: true,
-            failMessageInput: ''
-          });
-  
-  
-        }
-        catch (e)
-        {
+            try
+            {
+              localStorage.setItem('urlList', JSON.stringify(this.urls));
+        
+              this.setState({
+                buttonDisabled: false,
+                urls: this.urls,
+                title: '',
+                url: '',
+                failAlertShow: false,
+                successAlertShow: true,
+                failMessageInput: ''
+              });
+      
+      
+            }
+            catch (e)
+            {
+              this.setState({
+                buttonDisabled: false,
+                failAlertShow: true,
+                successAlertShow: false,
+                failMessageInput: 'Something Unexpected Happened!'
+              });
+            }
+          }
+          else
+          {
+            this.setState({
+              buttonDisabled: false,
+              failAlertShow: true,
+              successAlertShow: false,
+              failMessageInput: 'Something Unexpected Happened!'
+            });
+          }
+        })
+        .catch((e) => {
           this.setState({
             buttonDisabled: false,
             failAlertShow: true,
             successAlertShow: false,
             failMessageInput: 'Something Unexpected Happened!'
           });
-        }
-      })
-      .catch((e) => {
-        this.setState({
-          buttonDisabled: false,
-          failAlertShow: true,
-          successAlertShow: false,
-          failMessageInput: 'Something Unexpected Happened!'
         });
-      });
+
+      }
     }
     else
     {
@@ -146,11 +201,17 @@ export default class App extends Component<Props, State> {
             <Card>
               <Card.Body>
                 <Card.Title>Input your link that desired to be shortened!</Card.Title>
-                <Form className="App" onSubmit={this.onSubmit}>
+                <Form onSubmit={this.onSubmit}>
+                  <Form.Group as={Row} controlId="formBasicTitle">
+                    <Form.Label column sm={2}>Title</Form.Label>
+                    <Col sm={9}>
+                      <Form.Control placeholder="Type Title, Optional" disabled={this.state.buttonDisabled} value={this.state.title} onChange={this.onTitleChange}/>
+                    </Col>
+                  </Form.Group>
                   <Form.Group as={Row} controlId="formBasicUrl">
                     <Form.Label column sm={2}>Url</Form.Label>
-                    <Col sm={10}>
-                      <Form.Control required placeholder="Type Url" disabled={this.state.buttonDisabled} value={this.state.url} onChange={this.onChange}/>
+                    <Col sm={9}>
+                      <Form.Control required placeholder="Type Url, Required" disabled={this.state.buttonDisabled} value={this.state.url} onChange={this.onChange}/>
                     </Col>
                   </Form.Group>
                   <Form.Group as={Row}>
@@ -185,11 +246,37 @@ export default class App extends Component<Props, State> {
                 <Card.Title>Shortened Url</Card.Title>
                 {
                   this.state.urls && this.state.urls.length > 0 ?
-                  <ListGroup>
-                  {
-                    this.state.urls.map((item, index) => <ListGroup.Item target="_blank" key={index} action href={item.urlShortener}>{item.urlShortener}</ListGroup.Item>)
-                  }
-                  </ListGroup> : <Card.Text>Empty List</Card.Text>
+                  <Accordion>
+                    {
+                      this.state.urls.map((item, index) => 
+                      <Card key={index}>
+                        <Card.Header>
+                          <Row>
+                            <Col sm={9}>
+                              <Accordion.Toggle id={index} className="break-all" as={Button} variant="link" eventKey={index.toString()} onClick={this.onAccordionToggle}>
+                                {
+                                  (item.urlTitle && item.urlTitle.trim() !== "") ? <i>{item.urlTitle.trim()}</i> : <i>No Title</i>
+                                }
+                              </Accordion.Toggle>
+                            </Col>
+                            <Col sm={3} className="dropdown-align">
+                              {
+                                (item.isToggled) ? String.fromCharCode(9650) : String.fromCharCode(9660)
+                              }
+                            </Col>
+                          </Row>
+                        </Card.Header>
+                        <Accordion.Collapse eventKey={index.toString()}>
+                          <Card.Body>
+                            <Card.Link target="_blank" href={item.urlShortener}>{item.urlShortener}</Card.Link>
+                          </Card.Body>
+                        </Accordion.Collapse>
+                      </Card>
+                      )
+                    }
+                  </Accordion>
+                  : 
+                  <Card.Text>Empty List</Card.Text>
                 }
               </Card.Body>
             </Card>

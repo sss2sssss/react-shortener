@@ -2,3 +2,12 @@
   margin-top: 0.5rem !important;
   margin-bottom: 0.5rem !important;
 }
+
+.dropdown-align {
+  text-align: right !important;
+}
+
+.break-all {
+  white-space: normal;
+  word-break: break-all;
+}
