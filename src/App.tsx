@@ -201,6 +201,13 @@ export default class App extends Component<Props, State> {
             <Card>
               <Card.Body>
                 <Card.Title>Input your link that desired to be shortened!</Card.Title>
+                {
+                  (process.env.REACT_APP_DEMO_MODE && process.env.REACT_APP_DEMO_MODE?.split(",").length > 0) 
+                    ?
+                  <Card.Text>On this demo site we are allowing to shorten this {process.env.REACT_APP_DEMO_MODE?.split(",").length} domains: {process.env.REACT_APP_DEMO_MODE}</Card.Text>
+                    :
+                  <Card.Text>On this demo site we are allowing all domain to be shorten</Card.Text>
+                }
                 <Form onSubmit={this.onSubmit}>
                   <Form.Group as={Row} controlId="formBasicTitle">
                     <Form.Label column sm={2}>Title</Form.Label>
