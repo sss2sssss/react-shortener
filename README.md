@@ -17,6 +17,11 @@ Then once got your domain and key, create a .env file and add these two variable
 REACT_APP_FIREBASE_DYNAMIC_LINK_DOMAIN=YOUR_FIREBASE_DYNAMIC_LINK_DOMAIN
 REACT_APP_FIREBASE_WEB_API_KEY=YOUR_FIREBASE_WEB_API_KEY
 
+## Optional
+On .env there's one variable used to determine which domain that you use to whitelist:
+REACT_APP_DEMO_MODE=google.com,facebook.com,youtube.com,github.com,medium.com
+
+
 ## Available Scripts
 
 In the project directory, you can run:
@@ -37,4 +42,6 @@ It correctly bundles React in production mode and optimizes the build for the be
 The build is minified and the filenames include the hashes.<br />
 Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+This site had deployed to Firebase Hosting, more details on Firebase Hosting:
+https://firebase.google.com/docs/hosting
