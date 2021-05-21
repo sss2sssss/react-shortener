@@ -2,6 +2,9 @@ This project was bootstrapped with [React-Bootstrap](https://github.com/react-bo
 
 Simple Link Shortner Creator developed by using React and Firebase Dynamic Link.
 
+This web apps are now capacitor-ready! Read this for more details regards capacitor:
+https://capacitorjs.com/docs/v2
+
 Demo: https://react-linkshortener.firebaseapp.com
 
 The demo site will allowing user to shorten this five domain: google.com, facebook.com, youtube.com, github.com, medium.com.
@@ -41,6 +44,14 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 The build is minified and the filenames include the hashes.<br />
 Your app is ready to be deployed!
+
+### `npm run init-mobile`
+
+It will help init capacitor config and add android config into project.
+
+### `npm run start-android`
+
+It will auto run build script then copy asset over to android capacitor folder then open Android Studio
 
 
 This site had deployed to Firebase Hosting, more details on Firebase Hosting:
