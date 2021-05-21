@@ -26,7 +26,14 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "init-capacitor": "npx cap init",
+    "add-android": "npx cap add android",
+    "copy-web-asset": "npx cap copy",
+    "copy-to-android": "npx cap copy android",
+    "open-android": "npx cap open android",
+    "init-mobile": "npm run init-capacitor && npm run add-android",
+    "start-android": "npm run build && npm run copy-web-asset && npm run copy-to-android && npm run open-android"
   },
   "eslintConfig": {
     "extends": "react-app"
