@@ -10,6 +10,7 @@
 
 # production
 /build
+/android
 
 # misc
 .DS_Store
@@ -28,3 +29,6 @@ yarn-error.log*
 .firebaserc
 firebase.json
 hosting.*
+
+# capacitor
+capacitor.config.ts

@@ -209,19 +209,19 @@ export default class App extends Component<Props, State> {
                   <Card.Text>On this demo site we are allowing all domain to be shorten</Card.Text>
                 }
                 <Form onSubmit={this.onSubmit}>
-                  <Form.Group as={Row} controlId="formBasicTitle">
+                  <Form.Group as={Row} controlId="formBasicTitle" className="form-gap">
                     <Form.Label column sm={2}>Title</Form.Label>
                     <Col sm={9}>
                       <Form.Control placeholder="Type Title, Optional" disabled={this.state.buttonDisabled} value={this.state.title} onChange={this.onTitleChange}/>
                     </Col>
                   </Form.Group>
-                  <Form.Group as={Row} controlId="formBasicUrl">
+                  <Form.Group as={Row} controlId="formBasicUrl" className="form-gap">
                     <Form.Label column sm={2}>Url</Form.Label>
                     <Col sm={9}>
                       <Form.Control required placeholder="Type Url, Required" disabled={this.state.buttonDisabled} value={this.state.url} onChange={this.onChange}/>
                     </Col>
                   </Form.Group>
-                  <Form.Group as={Row}>
+                  <Form.Group as={Row} className="form-gap">
                     <Col sm={{ span: 10, offset: 2 }}>
                       <Row>
                         <Col>

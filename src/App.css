@@ -1,4 +1,9 @@
 .row-gap {
+  margin-top: 0.8rem !important;
+  margin-bottom: 0.8rem !important;
+}
+
+.form-gap {
   margin-top: 0.5rem !important;
   margin-bottom: 0.5rem !important;
 }
